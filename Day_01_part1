@@ -1,0 +1,18 @@
+## Need to mount to pull files and use via Panda
+from google.colab import drive
+drive.mount('/content/drive')
+## Need to authorize AGAIN, to be able to save as a GSheet.
+from google.colab import auth
+auth.authenticate_user()
+import gspread
+from gspread_dataframe import set_with_dataframe
+
+from google.auth import default
+
+creds, _=default()
+
+gc=gspread.authorize(creds)
+
+import pandas as pd
+import numpy as np
+import re
