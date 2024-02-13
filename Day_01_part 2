@@ -1,0 +1,21 @@
+values = {
+    "one": "1",
+    "two": "2",
+    "three": "3",
+    "four": "4",
+    "five": "5",
+    "six": "6",
+    "seven": "7",
+    "eight": "8",
+    "nine": "9"
+    }
+pairs = []
+for line in dataInput['Input'][:4]:
+    digits = []
+    # start at the first letter and move through it letter by letter.
+    # this is the only way i've found to account for overlapping words.
+    # an example is "oneight", which only matches "one" when using re.findall.
+    for i,c in enumerate(line):
+        if line[i].isdigit():
+            digits.append(line[i])
+digits
