@@ -1,0 +1,53 @@
+#====================================   Load File   ====================================
+worksheet = gc.open('2023 Advent of Code - Day 2 Input').sheet1
+rows=worksheet.get_all_values()
+
+dataInput=pd.DataFrame.from_records(rows)
+dataInput.columns=["Game"]
+dataInput=dataInput[1:]
+
+df=dataInput.copy()
+
+df[['Game','Results']] = df['Game'].str.split(':', n = 2, expand = True)
+df['Game']=df['Game'].str.replace('Game ','')
+df['Game']=df['Game'].str.strip()
+df['Game']=df['Game'].astype(int)
+df[['Set1','Set2','Set3','Set4','Set5','Set6']] = df['Results'].str.split(';',expand = True)
+
+#The Elf would first like to know which games would have been possible if the bag contained only 12 red cubes, 13 green cubes, and 14 blue cubes?
+
+# Counting
+for game in df['Game'].unique():
+    row_lookup = df[df['Game'] == game]
+
+    red_count_list = []
+    green_count_list = []
+    blue_count_list = []
+
+    for i in range(6):  # Iterate from 0 to 5
+        result = row_lookup.loc[:, 'Set'+str(i+1)].str.findall(r'\d+(?=\sred)')
+        red_count = sum([int(x[0]) for x in result if x])  # Sum all red counts
+        red_count_list.append(red_count)  # Append red count to the list
+
+        result = row_lookup.loc[:, 'Set'+str(i+1)].str.findall(r'\d+(?=\sgreen)')
+        green_count = sum([int(x[0]) for x in result if x])  # Sum all green counts
+        green_count_list.append(green_count)  # Append green count to the list
+
+        result = row_lookup.loc[:, 'Set'+str(i+1)].str.findall(r'\d+(?=\sblue)')
+        blue_count = sum([int(x[0]) for x in result if x])  # Sum all blue counts
+        blue_count_list.append(blue_count)  # Append blue count to the list
+
+    # Assign red count list to the corresponding rows of the DataFrame
+    result_r = any(item > 12 for item in red_count_list)
+    result_g = any(item > 13 for item in green_count_list)
+    result_b = any(item > 14 for item in blue_count_list)
+
+    df.loc[df['Game'] == game, "Red_Count"] = result_r
+    df.loc[df['Game'] == game, "Green_Count"] = result_g
+    df.loc[df['Game'] == game, "Blue_Count"] = result_b
+
+df.loc[(df['Red_Count']==False) & (df['Green_Count']==False) & (df['Blue_Count']==False), "Possible"]="Y"
+
+#Solution
+possible_games=df[df['Possible']=="Y"]
+possible_games['Game'].sum()
