@@ -1,18 +1,16 @@
-## Need to mount to pull files and use via Panda
-from google.colab import drive
-drive.mount('/content/drive')
-## Need to authorize AGAIN, to be able to save as a GSheet.
-from google.colab import auth
-auth.authenticate_user()
-import gspread
-from gspread_dataframe import set_with_dataframe
+#====================================   Load File   ====================================
+worksheet = gc.open('2023 Advent of Code - Day 1 Input').sheet1
+rows=worksheet.get_all_values()
 
-from google.auth import default
+dataInput=pd.DataFrame.from_records(rows)
+dataInput.columns=['Input']
+dataInput=dataInput[0:]
 
-creds, _=default()
+#====================================   Code   ====================================
+total=0
+for line in dataInput['Input']:
+  line=re.sub('\D','',line)
+  sum=int(line[0]+line[-1])
+  total+=sum
 
-gc=gspread.authorize(creds)
-
-import pandas as pd
-import numpy as np
-import re
+total
