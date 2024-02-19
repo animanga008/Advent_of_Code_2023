@@ -1,0 +1,67 @@
+# As you continue your walk, the Elf poses a second question: 
+# in each game you played, what is the fewest number of cubes of each color that could have been in the bag to make the game possible?
+
+# The power of a set of cubes is equal to the numbers of red, green, and blue cubes multiplied together. 
+# The power of the minimum set of cubes in game 1 is 48. In games 2-5 it was 12, 1560, 630, and 36, respectively. 
+# Adding up these five powers produces the sum 2286.
+
+#For each game, find the minimum set of cubes that must have been present. What is the sum of the power of these sets?
+
+#====================================   Load File   ====================================
+worksheet = gc.open('2023 Advent of Code - Day 2 Input').sheet1
+rows=worksheet.get_all_values()
+
+dataInput=pd.DataFrame.from_records(rows)
+dataInput.columns=["Game"]
+dataInput=dataInput[1:]
+
+df=dataInput.copy()
+
+df[['Game','Results']] = df['Game'].str.split(':', n = 2, expand = True)
+df['Game']=df['Game'].str.replace('Game ','')
+df['Game']=df['Game'].str.strip()
+df['Game']=df['Game'].astype(int)
+df[['Set1','Set2','Set3','Set4','Set5','Set6']] = df['Results'].str.split(';',expand = True)
+
+#The Elf would first like to know which games would have been possible if the bag contained only 12 red cubes, 13 green cubes, and 14 blue cubes?
+
+
+# Counting
+for game in df['Game'].unique():
+  row_lookup = df[df['Game'] == game]
+
+  red_count_list = []
+  green_count_list = []
+  blue_count_list = []
+
+  for i in range(6):
+    result = row_lookup.loc[:, 'Set'+str(i+1)].str.findall(r'\d+(?=\sred)')
+    red_count = sum([int(x[0]) for x in result if x])  # Sum all red counts
+    red_count_list.append(red_count)  # Append red count to the list
+
+    result = row_lookup.loc[:, 'Set'+str(i+1)].str.findall(r'\d+(?=\sgreen)')
+    green_count = sum([int(x[0]) for x in result if x])  # Sum all green counts
+    green_count_list.append(green_count)  # Append green count to the list
+
+    result = row_lookup.loc[:, 'Set'+str(i+1)].str.findall(r'\d+(?=\sblue)')
+    blue_count = sum([int(x[0]) for x in result if x])  # Sum all blue counts
+    blue_count_list.append(blue_count)  # Append blue count to the list
+
+  red_count_list=list(filter(lambda x: x!=0, red_count_list))
+  green_count_list=list(filter(lambda x: x!=0, green_count_list))
+  blue_count_list=list(filter(lambda x: x!=0, blue_count_list))
+
+  red_max=max(red_count_list)
+  green_max=max(green_count_list)
+  blue_max=max(blue_count_list)
+
+  df.loc[df['Game'] == game, "Red_Count"] = red_max
+  df.loc[df['Game'] == game, "Green_Count"] = green_max
+  df.loc[df['Game'] == game, "Blue_Count"] = blue_max
+
+  for i in ['Red', 'Green', 'Blue']:
+    df.loc[(df['Game'] == game) & (df[i+"_Count"]==0), i+"_Count"]=1
+
+#solution
+df['Power']=df['Red_Count']*df['Green_Count']*df['Blue_Count']
+df['Power'].sum()
