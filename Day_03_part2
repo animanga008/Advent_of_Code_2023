@@ -1,0 +1,31 @@
+# The missing part wasn't the only issue - one of the gears in the engine is wrong. 
+# A gear is any * symbol that is adjacent to exactly two part numbers. 
+# Its gear ratio is the result of multiplying those two numbers together.
+
+# What is the sum of all of the gear ratios in your engine schematic?
+
+import math
+data = pd.read_csv('/content/drive/MyDrive/Colab Notebooks/2023 Advent of Code/2023 Advent of Code - Day 3 Input.txt', header=None)
+data.columns=['Lines']
+
+lines = data['Lines']
+gears=dict()
+
+gear_regex= '\*'
+for row, line in enumerate(lines):
+  for gear in re.finditer(gear_regex, line):
+    col=gear.start()
+    gears[(row, col)]=[]
+
+number_regex = r'\d+'
+for row, line in enumerate(lines):
+    for num in re.finditer(number_regex, line):
+        for r in range(row-1, row+2):
+            for col in range(num.start()-1, num.end()+1):
+                if (r, col) in gears:
+                    gears[(r, col)].append(int(num.group()))
+
+total=0
+for num in gears.values():
+  if len(num) ==2:
+    total += math.prod(num)
