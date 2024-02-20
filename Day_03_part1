@@ -1,0 +1,27 @@
+# The engineer explains that an engine part seems to be missing from the engine, but nobody can figure out which one. 
+# If you can add up all the part numbers in the engine schematic, it should be easy to work out which part is missing.
+
+# What is the sum of all of the part numbers in the engine schematic?
+
+data = pd.read_csv('/content/drive/MyDrive/Colab Notebooks/2023 Advent of Code/2023 Advent of Code - Day 3 Input.txt', header=None)
+data.columns=['Lines']
+
+lines = data['Lines']
+symbol_regex = r'[^.\d]'
+symbol_adjacent = set()
+for row, line in enumerate(lines):
+    for m in re.finditer(symbol_regex, line):
+        col = m.start()
+        for r in range(row-1, row+2):
+          for c in range(col-1,col+2):
+            symbol_adjacent.add((r,c))
+
+total=0
+number_regex = r'\d+'
+for row, line in enumerate(lines):
+    for num in re.finditer(number_regex, line):
+      if any((row, col) in symbol_adjacent for col in range(*num.span())):
+        total+= int(num.group())
+
+#solution
+total
