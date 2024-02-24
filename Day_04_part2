@@ -1,0 +1,21 @@
+# There's no such thing as "points". Instead, scratchcards only cause you to win more scratchcards equal to the number of winning numbers you have.
+# Specifically, you win copies of the scratchcards below the winning card equal to the number of matches. 
+# So, if card 10 were to have 5 matching numbers, you would win one copy each of cards 11, 12, 13, 14, and 15.
+# Example - Card 1 has four matching numbers, so you win one copy each of the next four cards: cards 2, 3, 4, and 5.
+# Including the original set of scratchcards, how many total scratchcards do you end up with?
+
+data = pd.read_csv('/content/drive/MyDrive/Colab Notebooks/2023 Advent of Code/2023 Advent of Code - Day 4 Input.txt', header=None)
+data.columns=['Lines']
+data2=data[:2].copy()
+
+cards=[1]*len(data2['Lines'])
+regex=r':(.*)\|(.*)'
+
+for i, line in enumerate(data2['Lines']):
+  winning_numbers, my_numbers = re.findall(regex, line)[0]
+  winners = set(winning_numbers.split()) & set(my_numbers.split())
+  #print(winners)
+  for j in range(len(winners)):
+    #print(j)
+    cards[i+j+1] += cards[i]
+print(sum(cards))
