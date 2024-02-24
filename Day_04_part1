@@ -1,0 +1,27 @@
+data = pd.read_csv('/content/drive/MyDrive/Colab Notebooks/2023 Advent of Code/2023 Advent of Code - Day 4 Input.txt', header=None)
+data.columns=['Lines']
+data2=data.copy()
+
+data2[['Card', 'Num']]=data2['Lines'].str.split(':', expand=True)
+data2[['Winning Num', 'My Num']]=data2['Num'].str.split('|', expand=True)
+data2.drop(columns=['Lines', 'Num'], axis=1, inplace=True)
+data2.head()
+
+running_sum=0
+
+for lines in data2['Card'].unique():
+  tempdata=data2[data2['Card']==lines]
+
+  temp_win=tempdata['Winning Num'].str.split()
+  temp_win.reset_index(inplace=True, drop=True)
+  tempwin_set=set(temp_win[0])
+
+  temp_my=tempdata['My Num'].str.split()
+  temp_my.reset_index(inplace=True, drop=True)
+  tempmy_set=set(temp_my[0])
+
+  samenum=tempwin_set & tempmy_set
+  score= 0 if len(samenum) == 0 else 2 ** (len(samenum) -1) *1
+  running_sum += score
+
+running_sum
